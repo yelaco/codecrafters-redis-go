@@ -22,7 +22,6 @@ const (
 type Config struct {
 	Host       string
 	Port       int
-	Role       string
 	MasterHost string
 	MasterPort string
 }
@@ -40,11 +39,9 @@ func NewConfig() (Config, error) {
 	config := Config{
 		Host: "0.0.0.0",
 		Port: viper.GetInt("port"),
-		Role: ROLE_MASTER,
 	}
 	masterAddr := viper.GetString("replicaof")
 	if masterAddr != "" {
-		config.Role = ROLE_SLAVE
 		m := strings.Split(masterAddr, " ")
 		if len(m) != 2 {
 			return Config{}, ErrInvalidMasterAddr

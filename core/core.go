@@ -16,7 +16,7 @@ type Core struct {
 func NewCore(config util.Config) *Core {
 	return &Core{
 		db:   make(map[string]string),
-		info: NewServerInfo(),
+		info: NewServerInfo(config),
 	}
 }
 

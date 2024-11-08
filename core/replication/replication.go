@@ -8,10 +8,12 @@ import (
 )
 
 const (
-	DEFAULT_ROLE               = "master"
-	DEFAULT_REPLICATION_OFFSET = 0
-
 	REPL_ID_LEN = 40
+	ROLE_MASTER = "master"
+	ROLE_SLAVE  = "slave"
+
+	DEFAULT_ROLE               = ROLE_MASTER
+	DEFAULT_REPLICATION_OFFSET = 0
 )
 
 type InfoSection struct {
@@ -21,8 +23,12 @@ type InfoSection struct {
 	ReplicationOffset int
 }
 
-func NewInfoSection() InfoSection {
-	return defaultInfoSection()
+func NewInfoSection(c util.Config) InfoSection {
+	sec := defaultInfoSection()
+	if c.MasterHost != "" && c.MasterPort != "" {
+		sec.Role = ROLE_SLAVE
+	}
+	return sec
 }
 
 func defaultInfoSection() InfoSection {
