@@ -21,7 +21,7 @@ func Handshake(port, masterHost, masterPort string) error {
 		{"PING"},
 		{"REPLCONF", "listening-port", port},
 		{"REPLCONF", "capa", "psync2"},
-		// {"PSYNC"},
+		{"PSYNC", "?", "-1"},
 	}
 	reader := bufio.NewReader(c)
 	var respParser resp.RespParser
