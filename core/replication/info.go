@@ -21,12 +21,16 @@ type InfoSection struct {
 	ConnectedSlaves   int
 	ReplicationId     string
 	ReplicationOffset int
+	MasterHost        *string
+	MasterPort        *string
 }
 
 func NewInfoSection(c util.Config) InfoSection {
 	sec := defaultInfoSection()
 	if c.MasterHost != "" && c.MasterPort != "" {
 		sec.Role = ROLE_SLAVE
+		sec.MasterHost = &c.MasterHost
+		sec.MasterPort = &c.MasterPort
 	}
 	return sec
 }
@@ -42,6 +46,12 @@ func defaultInfoSection() InfoSection {
 		ReplicationId:     replicationId,
 		ReplicationOffset: DEFAULT_REPLICATION_OFFSET,
 	}
+}
+
+func (sec InfoSection) IsReplica() bool {
+	return sec.Role == ROLE_SLAVE &&
+		sec.MasterHost != nil &&
+		sec.MasterPort != nil
 }
 
 func (sec *InfoSection) String() string {

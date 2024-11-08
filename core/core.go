@@ -9,15 +9,16 @@ import (
 )
 
 type Core struct {
-	db   map[string]string
-	info ServerInfo
+	db         map[string]string
+	serverInfo ServerInfo
 }
 
-func NewCore(config util.Config) *Core {
-	return &Core{
-		db:   make(map[string]string),
-		info: NewServerInfo(config),
+func NewCore(config util.Config, serverInfo ServerInfo) *Core {
+	c := &Core{
+		db:         make(map[string]string),
+		serverInfo: serverInfo,
 	}
+	return c
 }
 
 func (c *Core) HandleCommand(command resp.RespData) (resp.RespData, error) {

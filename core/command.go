@@ -95,7 +95,7 @@ func (c *Core) Info(section string) (resp.RespData, error) {
 	switch section {
 	case "replication":
 		return resp.RespData{
-			Value: fmt.Sprintf("# Replication\n%v", c.info.Replication.String()),
+			Value: fmt.Sprintf("# Replication\n%v", c.serverInfo.Replication.String()),
 			Type:  resp.BulkString,
 		}, nil
 	default:

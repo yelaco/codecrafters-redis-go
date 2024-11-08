@@ -2,6 +2,7 @@ package resp
 
 import (
 	"fmt"
+	"strings"
 )
 
 type (
@@ -62,4 +63,13 @@ func (d RespData) Group() RespDataGroup {
 	default:
 		return -1
 	}
+}
+
+func FormatCommand(cmd []string) []byte {
+	var fcmd strings.Builder
+	fcmd.WriteString(fmt.Sprintf("*%d\r\n", len(cmd)))
+	for _, s := range cmd {
+		fcmd.WriteString(fmt.Sprintf("$%d\r\n%s\r\n", len(s), s))
+	}
+	return []byte(fcmd.String())
 }

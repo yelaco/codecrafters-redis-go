@@ -4,10 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"os"
 
 	"github.com/codecrafters-io/redis-starter-go/core"
+	"github.com/codecrafters-io/redis-starter-go/core/replication"
 	"github.com/codecrafters-io/redis-starter-go/resp"
 	"github.com/codecrafters-io/redis-starter-go/resp/v2/parser"
 	"github.com/codecrafters-io/redis-starter-go/util"
@@ -22,21 +24,25 @@ func main() {
 
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
-		fmt.Println("Failed to bind to port 6379: ", err.Error())
+		log.Fatalf("Failed to bind to port %d: %v\n", config.Port, err)
 		os.Exit(1)
+	}
+
+	serverInfo := core.NewServerInfo(config)
+	if serverInfo.Replication.IsReplica() {
+		replication.Handshake(*serverInfo.Replication.MasterHost, *serverInfo.Replication.MasterPort)
 	}
 
 	for {
 		c, err := l.Accept()
 		if err != nil {
-			fmt.Println("Error accepting connection: ", err.Error())
-			os.Exit(1)
+			fmt.Printf("Error accepting connection: %v\n", err)
 		}
 
 		go func() {
 			defer c.Close()
 
-			core := core.NewCore(config)
+			core := core.NewCore(config, serverInfo)
 			var respParser resp.RespParser
 
 			reader := bufio.NewReader(c)
