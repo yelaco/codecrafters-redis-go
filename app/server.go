@@ -7,14 +7,17 @@ import (
 	"net"
 	"os"
 
-	"github.com/codecrafters-io/redis-starter-go/internal/core"
-	"github.com/codecrafters-io/redis-starter-go/internal/resp"
-	"github.com/codecrafters-io/redis-starter-go/internal/resp/v2/parser"
-	"github.com/codecrafters-io/redis-starter-go/pkg/config"
+	"github.com/codecrafters-io/redis-starter-go/core"
+	"github.com/codecrafters-io/redis-starter-go/resp"
+	"github.com/codecrafters-io/redis-starter-go/resp/v2/parser"
+	"github.com/codecrafters-io/redis-starter-go/util"
 )
 
 func main() {
-	config := config.NewConfig()
+	config, err := util.NewConfig()
+	if err != nil {
+		panic(err)
+	}
 	addr := fmt.Sprintf("%v:%v", config.Host, config.Port)
 
 	l, err := net.Listen("tcp", addr)
@@ -33,7 +36,7 @@ func main() {
 		go func() {
 			defer c.Close()
 
-			core := core.NewCore()
+			core := core.NewCore(config)
 			var respParser resp.RespParser
 
 			reader := bufio.NewReader(c)

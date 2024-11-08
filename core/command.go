@@ -1,9 +1,10 @@
 package core
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/codecrafters-io/redis-starter-go/internal/resp"
+	"github.com/codecrafters-io/redis-starter-go/resp"
 )
 
 const (
@@ -94,7 +95,7 @@ func (c *Core) Info(section string) (resp.RespData, error) {
 	switch section {
 	case "replication":
 		return resp.RespData{
-			Value: "role:master\n",
+			Value: fmt.Sprintf("role:%s\n", c.info.role),
 			Type:  resp.BulkString,
 		}, nil
 	default:

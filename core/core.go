@@ -5,16 +5,21 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/codecrafters-io/redis-starter-go/internal/resp"
+	"github.com/codecrafters-io/redis-starter-go/resp"
+	"github.com/codecrafters-io/redis-starter-go/util"
 )
 
 type Core struct {
-	db map[string]string
+	db   map[string]string
+	info info
 }
 
-func NewCore() *Core {
+func NewCore(config util.Config) *Core {
 	return &Core{
 		db: make(map[string]string),
+		info: info{
+			role: config.Role,
+		},
 	}
 }
 
