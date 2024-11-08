@@ -2,7 +2,6 @@ package core
 
 import (
 	"bytes"
-	"fmt"
 	"strconv"
 
 	"github.com/codecrafters-io/redis-starter-go/resp"
@@ -11,15 +10,13 @@ import (
 
 type Core struct {
 	db   map[string]string
-	info info
+	info ServerInfo
 }
 
 func NewCore(config util.Config) *Core {
 	return &Core{
-		db: make(map[string]string),
-		info: info{
-			role: config.Role,
-		},
+		db:   make(map[string]string),
+		info: NewServerInfo(),
 	}
 }
 
@@ -43,7 +40,6 @@ func (c *Core) HandleCommand(command resp.RespData) (resp.RespData, error) {
 			return c.Echo(cmd[1])
 		}
 	case "set":
-		fmt.Println(cmd)
 		// TODO: parse the command
 		if len(cmd) >= 3 {
 			options := SetOptions{}
