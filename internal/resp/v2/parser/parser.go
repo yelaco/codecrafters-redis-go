@@ -1,4 +1,4 @@
-package respv2
+package parser
 
 import (
 	"errors"

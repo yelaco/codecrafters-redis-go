@@ -9,7 +9,7 @@ import (
 
 	"github.com/codecrafters-io/redis-starter-go/internal/core"
 	"github.com/codecrafters-io/redis-starter-go/internal/resp"
-	"github.com/codecrafters-io/redis-starter-go/internal/resp/respv2"
+	"github.com/codecrafters-io/redis-starter-go/internal/resp/v2/parser"
 	"github.com/codecrafters-io/redis-starter-go/pkg/config"
 )
 
@@ -46,7 +46,7 @@ func main() {
 					}
 					return
 				}
-				respParser = respv2.NewParser(payload)
+				respParser = parser.NewParser(payload)
 
 				data, err := respParser.Parse()
 				if err != nil {
