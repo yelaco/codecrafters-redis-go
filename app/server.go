@@ -24,13 +24,18 @@ func main() {
 
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
-		log.Fatalf("Failed to bind to port %d: %v\n", config.Port, err)
+		log.Fatalf("Failed to bind to port %s: %s\n", config.Port, err.Error())
 		os.Exit(1)
 	}
 
 	serverInfo := core.NewServerInfo(config)
 	if serverInfo.Replication.IsReplica() {
-		replication.Handshake(*serverInfo.Replication.MasterHost, *serverInfo.Replication.MasterPort)
+		masterHost := *serverInfo.Replication.MasterHost
+		masterPort := *serverInfo.Replication.MasterPort
+		err := replication.Handshake(config.Port, masterHost, masterPort)
+		if err != nil {
+			log.Fatalf("Failed to replicate from %s:%s: %s", masterHost, masterPort, err.Error())
+		}
 	}
 
 	for {

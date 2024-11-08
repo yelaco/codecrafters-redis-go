@@ -105,3 +105,12 @@ func (c *Core) Info(section string) (resp.RespData, error) {
 		}, nil
 	}
 }
+
+type ReplConfigOptions struct {
+	listeningPort string
+	capabilities  []string
+}
+
+func (c *Core) ReplConfig(options ReplConfigOptions) (resp.RespData, error) {
+	return resp.RespData{Value: "OK", Type: resp.SimpleString}, nil
+}

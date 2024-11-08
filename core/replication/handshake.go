@@ -10,8 +10,8 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/resp/v2/parser"
 )
 
-func Handshake(host, port string) error {
-	addr := fmt.Sprintf("%s:%s", host, port)
+func Handshake(port, masterHost, masterPort string) error {
+	addr := fmt.Sprintf("%s:%s", masterHost, masterPort)
 	c, err := net.Dial("tcp", addr)
 	if err != nil {
 		return err
@@ -19,7 +19,8 @@ func Handshake(host, port string) error {
 
 	stages := [][]string{
 		{"PING"},
-		// {"REPLCONF"},
+		{"REPLCONF", "listening-port", port},
+		{"REPLCONF", "capa", "psync2"},
 		// {"PSYNC"},
 	}
 	reader := bufio.NewReader(c)
@@ -28,14 +29,14 @@ func Handshake(host, port string) error {
 	for _, stage := range stages {
 		_, err = c.Write((resp.FormatCommand(stage)))
 		if err != nil {
-			return err
+			return fmt.Errorf("Handshake: Error writing connection: %w", err)
 		}
 
 		payload := make([]byte, 512)
 		_, err = reader.Read(payload)
 		if err != nil {
 			if err != io.EOF {
-				return fmt.Errorf("Error reading from connection: %w", err)
+				return fmt.Errorf("Handshake: Error reading from connection: %w", err)
 			}
 		}
 		respParser = parser.NewParser(payload)

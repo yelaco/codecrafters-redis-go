@@ -61,6 +61,10 @@ func (c *Core) HandleCommand(command resp.RespData) (resp.RespData, error) {
 		if len(cmd) >= 2 {
 			return c.Info(cmd[1])
 		}
+	case "replconf":
+		if len(cmd) >= 3 {
+			return c.ReplConfig(ReplConfigOptions{})
+		}
 	default:
 		return resp.RespData{
 			Value: "ERROR: command not found",
