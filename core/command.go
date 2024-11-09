@@ -114,3 +114,10 @@ type ReplConfigOptions struct {
 func (c *Core) ReplConfig(options ReplConfigOptions) (resp.RespData, error) {
 	return resp.RespData{Value: "OK", Type: resp.SimpleString}, nil
 }
+
+func (c *Core) Psync(replId string, offet int) (resp.RespData, error) {
+	return resp.RespData{
+		Value: fmt.Sprintf("+FULLRESYNC %v %v\r\n", c.serverInfo.Replication.ReplicationId, c.serverInfo.Replication.ReplicationOffset),
+		Type:  resp.SimpleString,
+	}, nil
+}
