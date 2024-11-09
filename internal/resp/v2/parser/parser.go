@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/codecrafters-io/redis-starter-go/resp"
+	"github.com/codecrafters-io/redis-starter-go/internal/resp"
 )
 
 var ErrUnknownItemType = errors.New("unknown item type")

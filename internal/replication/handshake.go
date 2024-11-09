@@ -6,8 +6,8 @@ import (
 	"io"
 	"net"
 
-	"github.com/codecrafters-io/redis-starter-go/resp"
-	"github.com/codecrafters-io/redis-starter-go/resp/v2/parser"
+	"github.com/codecrafters-io/redis-starter-go/internal/resp"
+	"github.com/codecrafters-io/redis-starter-go/internal/resp/v2/parser"
 )
 
 func Handshake(port, masterHost, masterPort string) error {

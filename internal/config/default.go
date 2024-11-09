@@ -1,0 +1,9 @@
+package config
+
+const (
+	DEFAULT_SERVER_HOST = "0.0.0.0"
+	DEFAULT_SERVER_PORT = "6379"
+
+	DEFAULT_REPL_ROLE   = "master"
+	DEFAULT_REPL_OFFSET = 0
+)
