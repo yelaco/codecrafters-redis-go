@@ -42,6 +42,10 @@ func (p *parser) Parse() (resp.RespData, error) {
 					return resp.RespData{}, fmt.Errorf("%w: got %v", resp.ErrItemTerminatorExpected, item)
 				}
 				item = p.lexer.nextItem()
+				if item.typ == itemDataType && item.val[0] == '-' {
+					item = p.lexer.nextItem()
+					item.val = []byte(fmt.Sprintf("-%s", string(item.val)))
+				}
 				if item.typ != itemData {
 					return resp.RespData{}, fmt.Errorf("%w: got %v", resp.ErrItemDataExpected, item)
 				}

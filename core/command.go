@@ -117,7 +117,7 @@ func (c *Core) ReplConfig(options ReplConfigOptions) (resp.RespData, error) {
 
 func (c *Core) Psync(replId string, offet int) (resp.RespData, error) {
 	return resp.RespData{
-		Value: fmt.Sprintf("+FULLRESYNC %v %v\r\n", c.serverInfo.Replication.ReplicationId, c.serverInfo.Replication.ReplicationOffset),
+		Value: fmt.Sprintf("+FULLRESYNC %v -1\r\n", c.serverInfo.Replication.ReplicationId),
 		Type:  resp.SimpleString,
 	}, nil
 }
