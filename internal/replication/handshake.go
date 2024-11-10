@@ -20,7 +20,7 @@ func Handshake(port, masterHost, masterPort string) error {
 	stages := [][]string{
 		{"PING"},
 		{"REPLCONF", "listening-port", port},
-		{"REPLCONF", "capa", "psync2"},
+		{"REPLCONF", "capa", "eof", "capa", "psync2"},
 		{"PSYNC", "?", "-1"},
 	}
 	reader := bufio.NewReader(c)
@@ -44,6 +44,14 @@ func Handshake(port, masterHost, masterPort string) error {
 		_, err := respParser.Parse()
 		if err != nil {
 			return fmt.Errorf("Error parsing payload: %w", err)
+		}
+	}
+
+	rdbFile := make([]byte, 512)
+	_, err = reader.Read(rdbFile)
+	if err != nil {
+		if err != io.EOF {
+			return fmt.Errorf("Handshake: Error reading from connection: %w", err)
 		}
 	}
 

@@ -4,7 +4,7 @@ import "errors"
 
 var (
 	ErrNilPayload                      = errors.New("nil payload")
-	ErrInvalidPayloadLength            = errors.New("invalid payload length")
+	ErrInvalidFileLength               = errors.New("invalid file length")
 	ErrInvalidRespDataType             = errors.New("invalid RESP data type")
 	ErrTerminatorNotFound              = errors.New("terminator not found")
 	ErrInvalidBulkStringParts          = errors.New("invalid bulk string parts")

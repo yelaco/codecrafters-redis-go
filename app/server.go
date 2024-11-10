@@ -42,7 +42,7 @@ func main() {
 		go func() {
 			defer c.Close()
 
-			core := core.NewCore()
+			core := core.NewCore(c)
 			var respParser resp.RespParser
 
 			reader := bufio.NewReader(c)

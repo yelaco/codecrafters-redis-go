@@ -2,6 +2,7 @@ package core
 
 import (
 	"bytes"
+	"net"
 
 	"github.com/codecrafters-io/redis-starter-go/internal/commands"
 	"github.com/codecrafters-io/redis-starter-go/internal/config"
@@ -9,11 +10,13 @@ import (
 )
 
 type Core struct {
+	Conn net.Conn
 	Dict map[string]string
 }
 
-func NewCore() *Core {
+func NewCore(conn net.Conn) *Core {
 	c := &Core{
+		Conn: conn,
 		Dict: make(map[string]string),
 	}
 	return c
@@ -31,5 +34,5 @@ func (c *Core) HandleCommand(command resp.RespData) (resp.RespData, error) {
 		cmd = append(cmd, string(v))
 	}
 
-	return commands.Command(cmd).Execute(commands.NewCommandCtx(c.Dict, config.GetServerConfig()))
+	return commands.Command(cmd).Execute(commands.NewCommandCtx(c.Conn, c.Dict, config.GetServerConfig()))
 }

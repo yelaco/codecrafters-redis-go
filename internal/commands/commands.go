@@ -3,6 +3,8 @@ package commands
 import (
 	"context"
 	"errors"
+	"net"
+	"sync"
 
 	"github.com/codecrafters-io/redis-starter-go/internal/config"
 	"github.com/codecrafters-io/redis-starter-go/internal/resp"
@@ -27,8 +29,10 @@ type Command []string
 
 type CommandCtx struct {
 	context.Context
+	conn         net.Conn
 	dict         map[string]string
 	serverConfig config.ServerConfig
+	mu           *sync.Mutex
 }
 
 var cmds = map[string]func(CommandCtx, []string) (resp.RespData, error){
@@ -41,14 +45,18 @@ var cmds = map[string]func(CommandCtx, []string) (resp.RespData, error){
 	PSYNC:    Psync,
 }
 
-func NewCommandCtx(dict map[string]string, cfg config.ServerConfig) CommandCtx {
+func NewCommandCtx(conn net.Conn, dict map[string]string, cfg config.ServerConfig) CommandCtx {
 	return CommandCtx{
+		conn:         conn,
 		dict:         dict,
 		serverConfig: cfg,
+		mu:           &sync.Mutex{},
 	}
 }
 
 func (cmd Command) Execute(ctx CommandCtx) (resp.RespData, error) {
+	ctx.mu.Lock()
+	defer ctx.mu.Unlock()
 	f, ok := cmds[cmd[0]]
 	if !ok {
 		return resp.RespData{
