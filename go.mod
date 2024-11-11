@@ -11,7 +11,6 @@ module github.com/codecrafters-io/redis-starter-go
 go 1.22
 
 require (
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
 )

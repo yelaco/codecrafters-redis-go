@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/codecrafters-io/redis-starter-go/internal/config"
+	"github.com/codecrafters-io/redis-starter-go/internal/replication"
 	"github.com/codecrafters-io/redis-starter-go/internal/resp"
 )
 
@@ -30,7 +31,6 @@ type Command []string
 type CommandCtx struct {
 	context.Context
 	conn         net.Conn
-	dict         map[string]string
 	serverConfig config.ServerConfig
 	mu           *sync.Mutex
 }
@@ -45,12 +45,20 @@ var cmds = map[string]func(CommandCtx, []string) (resp.RespData, error){
 	PSYNC:    Psync,
 }
 
-func NewCommandCtx(conn net.Conn, dict map[string]string, cfg config.ServerConfig) CommandCtx {
+func NewCommandCtx(conn net.Conn, cfg config.ServerConfig) CommandCtx {
 	return CommandCtx{
 		conn:         conn,
-		dict:         dict,
 		serverConfig: cfg,
 		mu:           &sync.Mutex{},
+	}
+}
+
+func (cmd Command) IsWriteCmd() bool {
+	switch cmd[0] {
+	case SET:
+		return true
+	default:
+		return false
 	}
 }
 
@@ -70,6 +78,9 @@ func (cmd Command) Execute(ctx CommandCtx) (resp.RespData, error) {
 			Value: "ERROR: Invalid command",
 			Type:  resp.SimpleError,
 		}, ErrInvalidCommand
+	}
+	if cmd.IsWriteCmd() {
+		replication.QueueCmdIfReplicate(cmd)
 	}
 	return result, nil
 }

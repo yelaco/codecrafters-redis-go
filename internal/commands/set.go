@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/codecrafters-io/redis-starter-go/internal/resp"
+	"github.com/codecrafters-io/redis-starter-go/internal/store"
 )
 
 type SetKeyExpireType string
@@ -26,8 +27,8 @@ type SetOptions struct {
 func Set(ctx CommandCtx, args []string) (resp.RespData, error) {
 	key := args[0]
 	value := args[1]
-	oldVal, ok := ctx.dict[key]
-	ctx.dict[key] = value
+	oldVal, ok := store.Get(key)
+	store.Set(key, value)
 	if len(args) >= 4 {
 		expireTime, err := strconv.Atoi(args[3])
 		if err != nil {
@@ -36,14 +37,16 @@ func Set(ctx CommandCtx, args []string) (resp.RespData, error) {
 		switch SetKeyExpireType(args[2]) {
 		case EX:
 			time.AfterFunc(time.Duration(expireTime)*time.Second, func() {
-				if ctx.dict[key] == value {
-					delete(ctx.dict, key)
+				curVal, _ := store.Get(key)
+				if curVal == value {
+					store.Delete(key)
 				}
 			})
 		case PX:
 			time.AfterFunc(time.Duration(expireTime)*time.Millisecond, func() {
-				if ctx.dict[key] == value {
-					delete(ctx.dict, key)
+				curVal, _ := store.Get(key)
+				if curVal == value {
+					store.Delete(key)
 				}
 			})
 		case EXAT:

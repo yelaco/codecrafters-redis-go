@@ -13,7 +13,6 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/internal/replication"
 	"github.com/codecrafters-io/redis-starter-go/internal/resp"
 	"github.com/codecrafters-io/redis-starter-go/internal/resp/v2/parser"
-	"github.com/codecrafters-io/redis-starter-go/pkg/util"
 )
 
 func main() {
@@ -27,10 +26,12 @@ func main() {
 	}
 
 	if cfg.Role == config.ROLE_SLAVE {
-		err := replication.Handshake(cfg.Port, cfg.MasterHost, cfg.MasterPort)
+		replConn, err := replication.Handshake(cfg.Port, cfg.MasterHost, cfg.MasterPort)
 		if err != nil {
 			log.Fatalf("Failed to replicate from %s:%s: %s", cfg.MasterHost, cfg.MasterPort, err.Error())
 		}
+		core := core.NewCore(replConn)
+		go replication.ReplicateFrom(replConn, core.HandleCommand)
 	}
 
 	for {
@@ -51,7 +52,7 @@ func main() {
 				_, err = reader.Read(payload)
 				if err != nil {
 					if err != io.EOF {
-						util.DumpLog(fmt.Sprintf("Error reading from connection: %s\n", err.Error()))
+						fmt.Printf("Error reading from connection: %s\n", err.Error())
 					}
 					return
 				}
@@ -59,18 +60,18 @@ func main() {
 
 				data, err := respParser.Parse()
 				if err != nil {
-					util.DumpLog(fmt.Sprintf("Error parsing payload: %s\n", err.Error()))
+					fmt.Printf("Error parsing payload: %s\n", err.Error())
 					return
 				}
 
 				result, err := core.HandleCommand(data)
 				if err != nil {
-					util.DumpLog(fmt.Sprintf("Error handling command: %s\n", err.Error()))
+					fmt.Printf("Error handling command: %s\n", err.Error())
 				}
 
 				_, err = c.Write([]byte(result.String()))
 				if err != nil {
-					util.DumpLog(fmt.Sprintf("Error writing to connection: %s\n", err.Error()))
+					fmt.Printf("Error writing to connection: %s\n", err.Error())
 					return
 				}
 			}
